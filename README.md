@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/sulla-hotfix.svg?color=green)](https://www.npmjs.com/package/sulla-hotfix)
+[![npm version](https://img.shields.io/npm/v/wa-decrypt.svg?color=green)](https://www.npmjs.com/package/wa-decrypt)
 [![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
 
 # wa-decrypt

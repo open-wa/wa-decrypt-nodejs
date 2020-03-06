@@ -58,6 +58,7 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   var cipherKey = mediaKeyExpanded.slice(16, 48);
   encodedBytes = encodedBytes.slice(0, -10);
   var decipher = crypto.createDecipheriv('aes-256-cbc', cipherKey, iv);
+  //@ts-ignore
   var decoded: any = decipher.update(encodedBytes);
   const mediaDataBuffer = Buffer.from(decoded, 'utf-8');
   return mediaDataBuffer;

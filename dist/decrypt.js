@@ -60,20 +60,17 @@ exports.mediaTypes = {
     STICKER: 'Image'
 };
 exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
-    var ua, options, haventGottenImageYet, res, buff, mediaDataBuffer;
+    var options, haventGottenImageYet, res, buff, mediaDataBuffer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                ua = useragentOverride || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
-                if (!ua.includes('WhatsApp'))
-                    ua = "WhatsApp/2.16.352 " + ua;
                 options = {
                     url: message.clientUrl.trim(),
                     encoding: null,
                     simple: false,
                     resolveWithFullResponse: true,
                     headers: {
-                        'User-Agent': ua
+                        'User-Agent': processUA(useragentOverride)
                     }
                 };
                 haventGottenImageYet = true;
@@ -98,6 +95,12 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
         }
     });
 }); };
+var processUA = function (userAgent) {
+    var ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
+    if (!ua.includes('WhatsApp'))
+        ua = "WhatsApp/2.16.352 " + ua;
+    return ua;
+};
 var magix = function (fileData, mediaKeyBase64, mediaType) {
     var encodedHex = fileData.toString('hex');
     var encodedBytes = hexToBytes(encodedHex);

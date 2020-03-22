@@ -14,15 +14,13 @@ export const mediaTypes = {
 };
 
 export const decryptMedia = async (message: any, useragentOverride?: string) => {
-  let ua = useragentOverride||'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
-  if (!ua.includes('WhatsApp')) ua = "WhatsApp/2.16.352 "+ua;
   const options = {
     url: message.clientUrl.trim(),
     encoding: null,
     simple: false,
     resolveWithFullResponse: true,
     headers: {
-      'User-Agent': ua
+      'User-Agent': processUA(useragentOverride)
     }
   };
   let haventGottenImageYet = true;
@@ -39,6 +37,12 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
   const mediaDataBuffer = magix(buff, message.mediaKey, message.type);
   return mediaDataBuffer;
 };
+
+const processUA = (userAgent:string)=> {
+  let ua = userAgent||'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
+  if (!ua.includes('WhatsApp')) ua = "WhatsApp/2.16.352 "+ua;
+  return ua;
+}
 
 const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   var encodedHex = fileData.toString('hex');

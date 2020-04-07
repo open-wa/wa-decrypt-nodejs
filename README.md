@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/wa-decrypt.svg?color=green)](https://www.npmjs.com/package/wa-decrypt)
+[![npm version](https://img.shields.io/npm/v/wa-decrypt.svg?color=green)](https://www.npmjs.com/package/@open-wa/wa-decrypt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a452db764ce137f35e99/maintainability)](https://codeclimate.com/github/smashah/wa-decrypt/maintainability)
 [![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
 
@@ -9,7 +9,7 @@
 ## Installation
 
 ```bash
-> npm i --save wa-decrypt
+> npm i --save @open-wa/wa-decrypt
 ```
 
 ## Decrypting Media
@@ -17,7 +17,7 @@
 Here is a sample of how to decrypt media. This has been tested on images, videos, documents, audio and voice notes.
 
 ```javascript
-import { decryptMedia } from 'wa-decrypt';
+import { decryptMedia } from '@open-wa/wa-decrypt';
 const mime = require('mime-types');
 const fs = require('fs');
 

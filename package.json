@@ -1,12 +1,15 @@
 {
-  "name": "wa-decrypt",
-  "version": "1.0.4",
+  "name": "@open-wa/wa-decrypt",
+  "version": "1.0.6",
   "description": "A lightweight implementation of the sulla-hotfix media decryption code",
   "main": "dist/decrypt.js",
   "types": "dist/decrypt.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "SMASHAH <shah@idk.uno> (smashah.dev)",
   "license": "ISC",
@@ -19,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smashah/wa-decrypt.git"
+    "url": "git+https://github.com/open-wa/wa-decrypt-nodejs.git"
   },
   "bugs": {
-    "url": "https://github.com/smashah/wa-decrypt/issues"
+    "url": "https://github.com/open-wa/wa-decrypt-nodejs/issues"
   },
-  "homepage": "https://github.com/smashah/wa-decrypt#readme",
+  "homepage": "https://github.com/open-wa/wa-decrypt-nodejs#readme",
   "devDependencies": {
     "@types/atob": "^2.1.2",
     "@types/node": "^13.1.8",

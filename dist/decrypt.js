@@ -38,18 +38,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var crypto_1 = __importDefault(require("crypto"));
 var futoin_hkdf_1 = __importDefault(require("futoin-hkdf"));
 var atob_1 = __importDefault(require("atob"));
-var rp = __importStar(require("request-promise-native"));
+var axios_1 = __importDefault(require("axios"));
 var timeout = function (ms) { return new Promise(function (res) { return setTimeout(res, ms); }); };
 exports.mediaTypes = {
     IMAGE: 'Image',
@@ -65,22 +58,21 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
         switch (_a.label) {
             case 0:
                 options = {
-                    url: message.clientUrl.trim(),
-                    encoding: null,
-                    simple: false,
-                    resolveWithFullResponse: true,
+                    responseType: 'arraybuffer',
                     headers: {
-                        'User-Agent': processUA(useragentOverride)
+                        'User-Agent': processUA(useragentOverride),
+                        'DNT': 1,
+                        'Upgrade-Insecure-Requests': 1
                     }
                 };
                 haventGottenImageYet = true;
                 _a.label = 1;
             case 1:
                 if (!haventGottenImageYet) return [3, 6];
-                return [4, rp.get(options)];
+                return [4, axios_1.default.get(message.clientUrl.trim(), options)];
             case 2:
                 res = _a.sent();
-                if (!(res.statusCode == 200)) return [3, 3];
+                if (!(res.status == 200)) return [3, 3];
                 haventGottenImageYet = false;
                 return [3, 5];
             case 3: return [4, timeout(2000)];
@@ -89,14 +81,14 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
                 _a.label = 5;
             case 5: return [3, 1];
             case 6:
-                buff = Buffer.from(res.body, 'utf8');
+                buff = Buffer.from(res.data, 'binary');
                 mediaDataBuffer = magix(buff, message.mediaKey, message.type);
                 return [2, mediaDataBuffer];
         }
     });
 }); };
 var processUA = function (userAgent) {
-    var ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
+    var ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36';
     if (!ua.includes('WhatsApp'))
         ua = "WhatsApp/2.16.352 " + ua;
     return ua;

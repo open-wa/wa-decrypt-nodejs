@@ -4,7 +4,7 @@
 
 # wa-decrypt
 
-> This is a single function library born out of the [sulla-hotfix](https://github.com/smashah/sulla) project. The reason for this project is so you can easily decrypt messages on a remote process without needing to install all of the dependencies (e.g puppeteer) that come with sulla-hotfix.
+> This is a single function library born out of the [open-wa/wa-automate-nodejs](https://github.com/open-wa/wa-automate-nodejs) project. The reason for this project is so you can easily decrypt messages on a remote process without needing to install all of the dependencies (e.g puppeteer) that come with open-wa/wa-automate-nodejs.
 
 ## Installation
 

@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import hkdf from 'futoin-hkdf';
 import atob from 'atob';
-import * as rp from 'request-promise-native';
+import axios from 'axios';
+import {ResponseType} from 'axios';
 
 const timeout = (ms:number) => new Promise(res => setTimeout(res, ms));
 export const mediaTypes = {
@@ -15,31 +16,30 @@ export const mediaTypes = {
 
 export const decryptMedia = async (message: any, useragentOverride?: string) => {
   const options = {
-    url: message.clientUrl.trim(),
-    encoding: null,
-    simple: false,
-    resolveWithFullResponse: true,
+    responseType: 'arraybuffer' as ResponseType,
     headers: {
-      'User-Agent': processUA(useragentOverride)
+      'User-Agent': processUA(useragentOverride),
+      'DNT':1,
+      'Upgrade-Insecure-Requests':1
     }
   };
   let haventGottenImageYet = true;
   let res: any;
   while (haventGottenImageYet) {
-    res = await rp.get(options);
-    if (res.statusCode == 200) {
+    res = await axios.get(message.clientUrl.trim(),options);
+    if (res.status == 200) {
       haventGottenImageYet = false;
     } else {
       await timeout(2000);
     }
   }
-  const buff = Buffer.from(res.body, 'utf8');
+  const buff = Buffer.from(res.data, 'binary');
   const mediaDataBuffer = magix(buff, message.mediaKey, message.type);
   return mediaDataBuffer;
 };
 
 const processUA = (userAgent:string)=> {
-  let ua = userAgent||'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36';
+  let ua = userAgent||'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36';
   if (!ua.includes('WhatsApp')) ua = "WhatsApp/2.16.352 "+ua;
   return ua;
 }
@@ -52,7 +52,6 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   const hash: string = 'sha256';
   const salt: any = new Uint8Array(32);
   const expandedSize = 112;
-  // @ts-ignore
   const mediaKeyExpanded = hkdf(mediaKeyBytes, expandedSize, {
     salt,
     info,
@@ -62,7 +61,6 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   var cipherKey = mediaKeyExpanded.slice(16, 48);
   encodedBytes = encodedBytes.slice(0, -10);
   var decipher = crypto.createDecipheriv('aes-256-cbc', cipherKey, iv);
-  //@ts-ignore
   var decoded: any = decipher.update(encodedBytes);
   const mediaDataBuffer = Buffer.from(decoded, 'utf-8');
   return mediaDataBuffer;

@@ -20,7 +20,9 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
     headers: {
       'User-Agent': processUA(useragentOverride),
       'DNT':1,
-      'Upgrade-Insecure-Requests':1
+      'Upgrade-Insecure-Requests':1,
+      'origin': 'https://web.whatsapp.com/',
+      'referer': 'https://web.whatsapp.com/'
     }
   };
   let haventGottenImageYet = true;

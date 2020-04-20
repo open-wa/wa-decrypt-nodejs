@@ -62,7 +62,9 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
                     headers: {
                         'User-Agent': processUA(useragentOverride),
                         'DNT': 1,
-                        'Upgrade-Insecure-Requests': 1
+                        'Upgrade-Insecure-Requests': 1,
+                        'origin': 'https://web.whatsapp.com/',
+                        'referer': 'https://web.whatsapp.com/'
                     }
                 };
                 haventGottenImageYet = true;

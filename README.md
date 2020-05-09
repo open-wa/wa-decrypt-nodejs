@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/wa-decrypt.svg?color=green)](https://www.npmjs.com/package/@open-wa/wa-decrypt)
+[![npm version](https://img.shields.io/npm/v/@open-wa/wa-decrypt.svg?color=green)](https://www.npmjs.com/package/@open-wa/wa-decrypt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a452db764ce137f35e99/maintainability)](https://codeclimate.com/github/smashah/wa-decrypt/maintainability)
 [![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
 

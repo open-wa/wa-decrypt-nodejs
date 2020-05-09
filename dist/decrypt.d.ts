@@ -8,3 +8,4 @@ export declare const mediaTypes: {
     STICKER: string;
 };
 export declare const decryptMedia: (message: any, useragentOverride?: string) => Promise<Buffer>;
+export declare const bleachMessage: (m: any) => any;

@@ -25,15 +25,20 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
       'referer': 'https://web.whatsapp.com/'
     }
   };
+  if(!message.clientUrl) throw new Error('message is missing critical data needed to download the file.')
   let haventGottenImageYet = true;
   let res: any;
-  while (haventGottenImageYet) {
-    res = await axios.get(message.clientUrl.trim(),options);
-    if (res.status == 200) {
-      haventGottenImageYet = false;
-    } else {
-      await timeout(2000);
+  try{
+    while (haventGottenImageYet) {
+      res = await axios.get(message.clientUrl.trim(),options);
+      if (res.status == 200) {
+        haventGottenImageYet = false;
+      } else {
+        await timeout(2000);
+      }
     }
+  } catch(error){
+    throw error
   }
   const buff = Buffer.from(res.data, 'binary');
   const mediaDataBuffer = magix(buff, message.mediaKey, message.type);
@@ -84,3 +89,14 @@ const base64ToBytes = (base64Str: any) => {
   }
   return byteArray;
 };
+
+/**
+ * This removes all but the minimum required data to decrypt media. This can be useful to minimize sensitive data transport. Note, this deletes all information regarding where/who sent the message.
+ */
+export const bleachMessage = (m) => {
+  var r = {...m};
+  Object.keys(m).map(key => {
+  if(!["type", "clientUrl", "mimetype", "mediaKey"].includes(key)) delete r[key]
+  })
+  return r;
+}

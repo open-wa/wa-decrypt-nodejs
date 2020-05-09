@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -53,7 +64,7 @@ exports.mediaTypes = {
     STICKER: 'Image'
 };
 exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
-    var options, haventGottenImageYet, res, buff, mediaDataBuffer;
+    var options, haventGottenImageYet, res, error_1, buff, mediaDataBuffer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -67,22 +78,31 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
                         'referer': 'https://web.whatsapp.com/'
                     }
                 };
+                if (!message.clientUrl)
+                    throw new Error('message is missing critical data needed to download the file.');
                 haventGottenImageYet = true;
                 _a.label = 1;
             case 1:
-                if (!haventGottenImageYet) return [3, 6];
-                return [4, axios_1.default.get(message.clientUrl.trim(), options)];
+                _a.trys.push([1, 8, , 9]);
+                _a.label = 2;
             case 2:
+                if (!haventGottenImageYet) return [3, 7];
+                return [4, axios_1.default.get(message.clientUrl.trim(), options)];
+            case 3:
                 res = _a.sent();
-                if (!(res.status == 200)) return [3, 3];
+                if (!(res.status == 200)) return [3, 4];
                 haventGottenImageYet = false;
-                return [3, 5];
-            case 3: return [4, timeout(2000)];
-            case 4:
+                return [3, 6];
+            case 4: return [4, timeout(2000)];
+            case 5:
                 _a.sent();
-                _a.label = 5;
-            case 5: return [3, 1];
-            case 6:
+                _a.label = 6;
+            case 6: return [3, 2];
+            case 7: return [3, 9];
+            case 8:
+                error_1 = _a.sent();
+                throw error_1;
+            case 9:
                 buff = Buffer.from(res.data, 'binary');
                 mediaDataBuffer = magix(buff, message.mediaKey, message.type);
                 return [2, mediaDataBuffer];
@@ -130,4 +150,12 @@ var base64ToBytes = function (base64Str) {
         byteArray[i] = binaryStr.charCodeAt(i);
     }
     return byteArray;
+};
+exports.bleachMessage = function (m) {
+    var r = __assign({}, m);
+    Object.keys(m).map(function (key) {
+        if (!["type", "clientUrl", "mimetype", "mediaKey"].includes(key))
+            delete r[key];
+    });
+    return r;
 };

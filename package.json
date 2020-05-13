@@ -30,7 +30,7 @@
   "homepage": "https://github.com/open-wa/wa-decrypt-nodejs#readme",
   "devDependencies": {
     "@types/atob": "^2.1.2",
-    "@types/node": "^13.1.8",
+    "@types/node": "^14.0.1",
     "ts-node": "^8.4.1",
     "typescript": "^3.8.3"
   }

@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.bleachMessage = exports.decryptMedia = exports.mediaTypes = void 0;
 var crypto_1 = __importDefault(require("crypto"));
 var futoin_hkdf_1 = __importDefault(require("futoin-hkdf"));
 var atob_1 = __importDefault(require("atob"));
@@ -130,7 +131,8 @@ var magix = function (fileData, mediaKeyBase64, mediaType) {
     });
     var iv = mediaKeyExpanded.slice(0, 16);
     var cipherKey = mediaKeyExpanded.slice(16, 48);
-    encodedBytes = encodedBytes.slice(0, -10);
+    if (mediaType !== exports.mediaTypes.PTT)
+        encodedBytes = encodedBytes.slice(0, -10);
     var decipher = crypto_1.default.createDecipheriv('aes-256-cbc', cipherKey, iv);
     var decoded = decipher.update(encodedBytes);
     var mediaDataBuffer = Buffer.from(decoded, 'utf-8');

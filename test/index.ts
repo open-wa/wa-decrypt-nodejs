@@ -3,7 +3,7 @@ const mime = require('mime-types');
 const fs = require('fs');
 
 async function test() {
-  //The absolute minimum data required to decrypt a file
+  //The absolute minimum data required to decrypt a file. This expires after a while. Add your own data here.
     const message = {
         "type": "image",
         "clientUrl": "https://mmg-fna.whatsapp.net/d/f/ArWPNrfRA-dsdarFjaUKLmdH3dsbqlAa46uu_185IrdX.enc",

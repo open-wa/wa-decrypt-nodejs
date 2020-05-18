@@ -66,7 +66,7 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   });
   var iv = mediaKeyExpanded.slice(0, 16);
   var cipherKey = mediaKeyExpanded.slice(16, 48);
-  encodedBytes = encodedBytes.slice(0, -10);
+  if(mediaType !== mediaTypes.PTT) encodedBytes = encodedBytes.slice(0, -10);
   var decipher = crypto.createDecipheriv('aes-256-cbc', cipherKey, iv);
   var decoded: any = decipher.update(encodedBytes);
   const mediaDataBuffer = Buffer.from(decoded, 'utf-8');

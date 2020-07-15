@@ -40,8 +40,15 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
   } catch(error){
     throw error
   }
+  let upload_hash = crypto.createHash('sha256').update(res.data).digest('base64');
   const buff = Buffer.from(res.data, 'binary');
-  const mediaDataBuffer = magix(buff, message.mediaKey, message.type);
+  const mediaDataBuffer = magix(buff, message.mediaKey, message.type, message.size);
+  let file_hash = crypto.createHash('sha256').update(mediaDataBuffer).digest('base64');
+  let is_valid = {
+    in: upload_hash == message.uploadhash,
+    out: file_hash == message.filehash
+  };
+  console.log(is_valid);
   return mediaDataBuffer;
 };
 
@@ -51,7 +58,7 @@ const processUA = (userAgent:string)=> {
   return ua;
 }
 
-const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
+const magix = (fileData: any, mediaKeyBase64: any, mediaType: any, expectedSize:number) => {
   var encodedHex = fileData.toString('hex');
   var encodedBytes = hexToBytes(encodedHex);
   var mediaKeyBytes: any = base64ToBytes(mediaKeyBase64);
@@ -66,12 +73,31 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any) => {
   });
   var iv = mediaKeyExpanded.slice(0, 16);
   var cipherKey = mediaKeyExpanded.slice(16, 48);
-  if(mediaType !== mediaTypes.PTT) encodedBytes = encodedBytes.slice(0, -10);
+  encodedBytes = encodedBytes.slice(0, -10);
   var decipher = crypto.createDecipheriv('aes-256-cbc', cipherKey, iv);
-  var decoded: any = decipher.update(encodedBytes);
-  const mediaDataBuffer = Buffer.from(decoded, 'utf-8');
+  var decoded: Buffer = decipher.update(encodedBytes);
+  const mediaDataBuffer = fixPadding(decoded, expectedSize);
   return mediaDataBuffer;
 };
+
+const fixPadding = (data:Buffer, expectedSize:number)  => {
+  let padding = expectedSize % 16;
+  if(padding > 0)
+  {
+    if((expectedSize + padding) == data.length) {
+       console.log(`trimmed: ${padding} bytes`);
+       data = data.slice(0, data.length - padding);
+    } else if((data.length + padding) == expectedSize) {
+      console.log(`adding: ${padding} bytes`);
+      let arr = new Uint16Array(padding).map(b => padding);
+      data = Buffer.concat([data, Buffer.from(arr)]);
+    }
+  }
+  //@ts-ignore
+  // return data;
+  return Buffer.from(data, 'utf-8');
+};
+
 
 const hexToBytes = (hexStr: any) => {
   var intArray = [];
@@ -96,7 +122,7 @@ const base64ToBytes = (base64Str: any) => {
 export const bleachMessage = (m) => {
   var r = {...m};
   Object.keys(m).map(key => {
-  if(!["type", "clientUrl", "mimetype", "mediaKey"].includes(key)) delete r[key]
+  if(!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash"].includes(key)) delete r[key]
   })
   return r;
 }

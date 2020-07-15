@@ -48,7 +48,7 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
     in: upload_hash == message.uploadhash,
     out: file_hash == message.filehash
   };
-  console.log(is_valid);
+  // console.log(is_valid);
   return mediaDataBuffer;
 };
 
@@ -85,10 +85,10 @@ const fixPadding = (data:Buffer, expectedSize:number)  => {
   if(padding > 0)
   {
     if((expectedSize + padding) == data.length) {
-       console.log(`trimmed: ${padding} bytes`);
+      //  console.log(`trimmed: ${padding} bytes`);
        data = data.slice(0, data.length - padding);
     } else if((data.length + padding) == expectedSize) {
-      console.log(`adding: ${padding} bytes`);
+      // console.log(`adding: ${padding} bytes`);
       let arr = new Uint16Array(padding).map(b => padding);
       data = Buffer.concat([data, Buffer.from(arr)]);
     }

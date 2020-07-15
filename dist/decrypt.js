@@ -65,7 +65,7 @@ exports.mediaTypes = {
     STICKER: 'Image'
 };
 exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
-    var options, haventGottenImageYet, res, error_1, buff, mediaDataBuffer;
+    var options, haventGottenImageYet, res, error_1, upload_hash, buff, mediaDataBuffer, file_hash, is_valid;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -104,8 +104,14 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
                 error_1 = _a.sent();
                 throw error_1;
             case 9:
+                upload_hash = crypto_1.default.createHash('sha256').update(res.data).digest('base64');
                 buff = Buffer.from(res.data, 'binary');
-                mediaDataBuffer = magix(buff, message.mediaKey, message.type);
+                mediaDataBuffer = magix(buff, message.mediaKey, message.type, message.size);
+                file_hash = crypto_1.default.createHash('sha256').update(mediaDataBuffer).digest('base64');
+                is_valid = {
+                    in: upload_hash == message.uploadhash,
+                    out: file_hash == message.filehash
+                };
                 return [2, mediaDataBuffer];
         }
     });
@@ -116,7 +122,7 @@ var processUA = function (userAgent) {
         ua = "WhatsApp/2.16.352 " + ua;
     return ua;
 };
-var magix = function (fileData, mediaKeyBase64, mediaType) {
+var magix = function (fileData, mediaKeyBase64, mediaType, expectedSize) {
     var encodedHex = fileData.toString('hex');
     var encodedBytes = hexToBytes(encodedHex);
     var mediaKeyBytes = base64ToBytes(mediaKeyBase64);
@@ -131,12 +137,24 @@ var magix = function (fileData, mediaKeyBase64, mediaType) {
     });
     var iv = mediaKeyExpanded.slice(0, 16);
     var cipherKey = mediaKeyExpanded.slice(16, 48);
-    if (mediaType !== exports.mediaTypes.PTT)
-        encodedBytes = encodedBytes.slice(0, -10);
+    encodedBytes = encodedBytes.slice(0, -10);
     var decipher = crypto_1.default.createDecipheriv('aes-256-cbc', cipherKey, iv);
     var decoded = decipher.update(encodedBytes);
-    var mediaDataBuffer = Buffer.from(decoded, 'utf-8');
+    var mediaDataBuffer = fixPadding(decoded, expectedSize);
     return mediaDataBuffer;
+};
+var fixPadding = function (data, expectedSize) {
+    var padding = expectedSize % 16;
+    if (padding > 0) {
+        if ((expectedSize + padding) == data.length) {
+            data = data.slice(0, data.length - padding);
+        }
+        else if ((data.length + padding) == expectedSize) {
+            var arr = new Uint16Array(padding).map(function (b) { return padding; });
+            data = Buffer.concat([data, Buffer.from(arr)]);
+        }
+    }
+    return Buffer.from(data, 'utf-8');
 };
 var hexToBytes = function (hexStr) {
     var intArray = [];
@@ -156,7 +174,7 @@ var base64ToBytes = function (base64Str) {
 exports.bleachMessage = function (m) {
     var r = __assign({}, m);
     Object.keys(m).map(function (key) {
-        if (!["type", "clientUrl", "mimetype", "mediaKey"].includes(key))
+        if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash"].includes(key))
             delete r[key];
     });
     return r;

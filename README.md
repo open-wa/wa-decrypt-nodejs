@@ -40,7 +40,7 @@ const processMessage = async message => {
 
 ## Verifying Decryption
 
-As of v2.0.0 of `wa-decrypt`, you are now able to verify the decryption output hash with the actual hash of the file as represented by `message.filehash`. You can see an example of this in `test/index.ts`.
+As of v2.0.0 of `wa-decrypt`, you are now able to verify the decryption output hash with the actual hash of the file as represented by `message.filehash`. You can see an example of this in `test/index.ts`. Please note that YOU CANNOT VERIFY THE HASH OF STICKERS, so don't even try it right now!
 
 ```javascript
 import crypto from 'crypto';

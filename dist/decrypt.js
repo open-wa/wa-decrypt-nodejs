@@ -133,7 +133,7 @@ var magix = function (fileData, mediaKeyBase64, mediaType, expectedSize) {
     var cipherKey = mediaKeyExpanded.slice(16, 48);
     var decipher = crypto_1.default.createDecipheriv('aes-256-cbc', cipherKey, iv);
     var decoded = decipher.update(encodedBytes);
-    var mediaDataBuffer = fixPadding(decoded, expectedSize);
+    var mediaDataBuffer = expectedSize ? fixPadding(decoded, expectedSize) : decoded;
     return mediaDataBuffer;
 };
 var fixPadding = function (data, expectedSize) {

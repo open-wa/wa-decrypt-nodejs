@@ -51,7 +51,7 @@ const processUA = (userAgent: string) => {
   return ua;
 }
 
-const magix = (fileData: any, mediaKeyBase64: any, mediaType: any, expectedSize: number) => {
+const magix = (fileData: any, mediaKeyBase64: any, mediaType: any, expectedSize?: number) => {
   var encodedHex = fileData.toString('hex');
   var encodedBytes = hexToBytes(encodedHex);
   var mediaKeyBytes: any = base64ToBytes(mediaKeyBase64);
@@ -68,7 +68,7 @@ const magix = (fileData: any, mediaKeyBase64: any, mediaType: any, expectedSize:
   var cipherKey = mediaKeyExpanded.slice(16, 48);
   var decipher = crypto.createDecipheriv('aes-256-cbc', cipherKey, iv);
   var decoded: Buffer = decipher.update(encodedBytes);
-  const mediaDataBuffer = fixPadding(decoded, expectedSize);
+  const mediaDataBuffer = expectedSize ? fixPadding(decoded, expectedSize) : decoded;
   return mediaDataBuffer;
 };
 

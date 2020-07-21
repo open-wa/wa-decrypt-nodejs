@@ -65,7 +65,7 @@ exports.mediaTypes = {
     STICKER: 'Image'
 };
 exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
-    var options, haventGottenImageYet, res, error_1, upload_hash, buff, mediaDataBuffer, file_hash, is_valid;
+    var options, haventGottenImageYet, res, error_1, buff, mediaDataBuffer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -104,14 +104,8 @@ exports.decryptMedia = function (message, useragentOverride) { return __awaiter(
                 error_1 = _a.sent();
                 throw error_1;
             case 9:
-                upload_hash = crypto_1.default.createHash('sha256').update(res.data).digest('base64');
                 buff = Buffer.from(res.data, 'binary');
                 mediaDataBuffer = magix(buff, message.mediaKey, message.type, message.size);
-                file_hash = crypto_1.default.createHash('sha256').update(mediaDataBuffer).digest('base64');
-                is_valid = {
-                    in: upload_hash == message.uploadhash,
-                    out: file_hash == message.filehash
-                };
                 return [2, mediaDataBuffer];
         }
     });
@@ -137,14 +131,13 @@ var magix = function (fileData, mediaKeyBase64, mediaType, expectedSize) {
     });
     var iv = mediaKeyExpanded.slice(0, 16);
     var cipherKey = mediaKeyExpanded.slice(16, 48);
-    encodedBytes = encodedBytes.slice(0, -10);
     var decipher = crypto_1.default.createDecipheriv('aes-256-cbc', cipherKey, iv);
     var decoded = decipher.update(encodedBytes);
     var mediaDataBuffer = fixPadding(decoded, expectedSize);
     return mediaDataBuffer;
 };
 var fixPadding = function (data, expectedSize) {
-    var padding = expectedSize % 16;
+    var padding = (16 - (expectedSize % 16)) & 0xf;
     if (padding > 0) {
         if ((expectedSize + padding) == data.length) {
             data = data.slice(0, data.length - padding);

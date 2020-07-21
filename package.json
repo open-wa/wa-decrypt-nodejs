@@ -1,6 +1,6 @@
 {
   "name": "@open-wa/wa-decrypt",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A lightweight implementation of the open-wa/wa-automate-nodejs media decryption code",
   "main": "dist/decrypt.js",
   "types": "dist/decrypt.d.ts",

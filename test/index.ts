@@ -1,6 +1,7 @@
 import {decryptMedia} from '../src/decrypt';
 const mime = require('mime-types');
 const fs = require('fs');
+import crypto from 'crypto';
 
 async function test() {
   //The absolute minimum data required to decrypt a file. This expires after a while. Add your own data here.
@@ -14,7 +15,12 @@ async function test() {
       uploadhash: "SyfWSQRbVN6XQ8c5FPTKcObk9gnFNuiS48OMDl5DGMQ="
       }
     const filename = `${Date.now()}.${mime.extension(message.mimetype)}`;
-    const mediaData = await decryptMedia(message,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
+    const mediaData = await decryptMedia(message);
+    //Now confirm hash
+    
+    let output_hash = crypto.createHash('sha256').update(mediaData).digest('base64');
+    let hashValid = message.filehash == output_hash;
+    console.log('Hash Validated:', hashValid);
     fs.writeFile(filename, mediaData, function(err) {
       if (err) {
         return console.log(err);

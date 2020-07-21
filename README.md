@@ -38,6 +38,21 @@ const processMessage = async message => {
   }
 ```
 
+## Verifying Decryption
+
+As of v2.0.0 of `wa-decrypt`, you are now able to verify the decryption output hash with the actual hash of the file as represented by `message.filehash`. You can see an example of this in `test/index.ts`.
+
+```javascript
+import crypto from 'crypto';
+...
+
+    const mediaData = await decryptMedia(message);
+    let output_hash = crypto.createHash('sha256').update(mediaData).digest('base64');
+    let hashValid = message.filehash == output_hash;
+    console.log('Hash Validated:', hashValid);
+
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

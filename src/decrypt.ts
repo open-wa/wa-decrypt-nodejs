@@ -3,6 +3,16 @@ import hkdf from 'futoin-hkdf';
 import atob from 'atob';
 import axios from 'axios';
 import { ResponseType } from 'axios';
+const makeOptions = (useragentOverride:string) => ({
+  responseType: 'arraybuffer' as ResponseType,
+  headers: {
+    'User-Agent': processUA(useragentOverride),
+    'DNT': 1,
+    'Upgrade-Insecure-Requests': 1,
+    'origin': 'https://web.whatsapp.com/',
+    'referer': 'https://web.whatsapp.com/'
+  }
+});
 
 const timeout = (ms: number) => new Promise(res => setTimeout(res, ms));
 export const mediaTypes = {
@@ -15,16 +25,7 @@ export const mediaTypes = {
 };
 
 export const decryptMedia = async (message: any, useragentOverride?: string) => {
-  const options = {
-    responseType: 'arraybuffer' as ResponseType,
-    headers: {
-      'User-Agent': processUA(useragentOverride),
-      'DNT': 1,
-      'Upgrade-Insecure-Requests': 1,
-      'origin': 'https://web.whatsapp.com/',
-      'referer': 'https://web.whatsapp.com/'
-    }
-  };
+  const options = makeOptions(useragentOverride);
   if (!message.clientUrl) throw new Error('message is missing critical data needed to download the file.')
   let haventGottenImageYet = true;
   let res: any;
@@ -41,8 +42,7 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
     throw error
   }
   const buff = Buffer.from(res.data, 'binary');
-  const mediaDataBuffer = magix(buff, message.mediaKey, message.type, message.size);
-  return mediaDataBuffer;
+  return magix(buff, message.mediaKey, message.type, message.size);
 };
 
 const processUA = (userAgent: string) => {

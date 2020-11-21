@@ -34,6 +34,9 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
       res = await axios.get(message.clientUrl.trim(), options);
       if (res.status == 200) {
         haventGottenImageYet = false;
+      } else if (res.status == 404) {
+        console.error('This media does not exist, or is no longer available on the server. Please see: https://docs.openwa.dev/pages/How%20to/decrypt-media.html#40439d')
+        haventGottenImageYet = false;
       } else {
         await timeout(2000);
       }

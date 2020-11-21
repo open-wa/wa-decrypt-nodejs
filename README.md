@@ -53,6 +53,12 @@ import crypto from 'crypto';
 
 ```
 
+## Troubleshooting
+
+If you're having issues with 404s or are unable to decrypt stickers, please see this documentation:
+
+[docs.openwa.dev](https://docs.openwa.dev/pages/How%20to/decrypt-media.html)
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

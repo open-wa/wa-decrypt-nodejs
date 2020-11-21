@@ -55,6 +55,16 @@ var crypto_1 = __importDefault(require("crypto"));
 var futoin_hkdf_1 = __importDefault(require("futoin-hkdf"));
 var atob_1 = __importDefault(require("atob"));
 var axios_1 = __importDefault(require("axios"));
+var makeOptions = function (useragentOverride) { return ({
+    responseType: 'arraybuffer',
+    headers: {
+        'User-Agent': processUA(useragentOverride),
+        'DNT': 1,
+        'Upgrade-Insecure-Requests': 1,
+        'origin': 'https://web.whatsapp.com/',
+        'referer': 'https://web.whatsapp.com/'
+    }
+}); };
 var timeout = function (ms) { return new Promise(function (res) { return setTimeout(res, ms); }); };
 exports.mediaTypes = {
     IMAGE: 'Image',
@@ -64,52 +74,48 @@ exports.mediaTypes = {
     DOCUMENT: 'Document',
     STICKER: 'Image'
 };
-exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
-    var options, haventGottenImageYet, res, error_1, buff, mediaDataBuffer;
+var decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
+    var options, haventGottenImageYet, res, error_1, buff;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                options = {
-                    responseType: 'arraybuffer',
-                    headers: {
-                        'User-Agent': processUA(useragentOverride),
-                        'DNT': 1,
-                        'Upgrade-Insecure-Requests': 1,
-                        'origin': 'https://web.whatsapp.com/',
-                        'referer': 'https://web.whatsapp.com/'
-                    }
-                };
+                options = makeOptions(useragentOverride);
                 if (!message.clientUrl)
                     throw new Error('message is missing critical data needed to download the file.');
                 haventGottenImageYet = true;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 8, , 9]);
+                _a.trys.push([1, 9, , 10]);
                 _a.label = 2;
             case 2:
-                if (!haventGottenImageYet) return [3, 7];
+                if (!haventGottenImageYet) return [3, 8];
                 return [4, axios_1.default.get(message.clientUrl.trim(), options)];
             case 3:
                 res = _a.sent();
                 if (!(res.status == 200)) return [3, 4];
                 haventGottenImageYet = false;
-                return [3, 6];
-            case 4: return [4, timeout(2000)];
-            case 5:
+                return [3, 7];
+            case 4:
+                if (!(res.status == 404)) return [3, 5];
+                console.error('This media does not exist, or is no longer available on the server. Please see: https://docs.openwa.dev/pages/How%20to/decrypt-media.html#40439d');
+                haventGottenImageYet = false;
+                return [3, 7];
+            case 5: return [4, timeout(2000)];
+            case 6:
                 _a.sent();
-                _a.label = 6;
-            case 6: return [3, 2];
-            case 7: return [3, 9];
-            case 8:
+                _a.label = 7;
+            case 7: return [3, 2];
+            case 8: return [3, 10];
+            case 9:
                 error_1 = _a.sent();
                 throw error_1;
-            case 9:
+            case 10:
                 buff = Buffer.from(res.data, 'binary');
-                mediaDataBuffer = magix(buff, message.mediaKey, message.type, message.size);
-                return [2, mediaDataBuffer];
+                return [2, magix(buff, message.mediaKey, message.type, message.size)];
         }
     });
 }); };
+exports.decryptMedia = decryptMedia;
 var processUA = function (userAgent) {
     var ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36';
     if (!ua.includes('WhatsApp'))
@@ -164,7 +170,7 @@ var base64ToBytes = function (base64Str) {
     }
     return byteArray;
 };
-exports.bleachMessage = function (m) {
+var bleachMessage = function (m) {
     var r = __assign({}, m);
     Object.keys(m).map(function (key) {
         if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash"].includes(key))
@@ -172,3 +178,4 @@ exports.bleachMessage = function (m) {
     });
     return r;
 };
+exports.bleachMessage = bleachMessage;

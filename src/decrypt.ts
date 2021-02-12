@@ -26,6 +26,7 @@ export const mediaTypes = {
 
 export const decryptMedia = async (message: any, useragentOverride?: string) => {
   const options = makeOptions(useragentOverride);
+  message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
   if (!message.clientUrl) throw new Error('message is missing critical data needed to download the file.')
   let haventGottenImageYet = true;
   let res: any;

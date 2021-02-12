@@ -80,6 +80,7 @@ var decryptMedia = function (message, useragentOverride) { return __awaiter(void
         switch (_a.label) {
             case 0:
                 options = makeOptions(useragentOverride);
+                message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
                 if (!message.clientUrl)
                     throw new Error('message is missing critical data needed to download the file.');
                 haventGottenImageYet = true;

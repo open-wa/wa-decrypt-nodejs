@@ -3,7 +3,7 @@ import hkdf from 'futoin-hkdf';
 import atob from 'atob';
 import axios from 'axios';
 import { ResponseType } from 'axios';
-const makeOptions = (useragentOverride:string) => ({
+const makeOptions = (useragentOverride: string) => ({
   responseType: 'arraybuffer' as ResponseType,
   headers: {
     'User-Agent': processUA(useragentOverride),
@@ -116,7 +116,7 @@ const base64ToBytes = (base64Str: any) => {
 export const bleachMessage = (m) => {
   var r = { ...m };
   Object.keys(m).map(key => {
-    if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash"].includes(key)) delete r[key]
+    if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash", "deprecatedMms3Url"].includes(key)) delete r[key]
   })
   return r;
 }

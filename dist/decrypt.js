@@ -74,7 +74,7 @@ exports.mediaTypes = {
     DOCUMENT: 'Document',
     STICKER: 'Image'
 };
-var decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
+exports.decryptMedia = function (message, useragentOverride) { return __awaiter(void 0, void 0, void 0, function () {
     var options, haventGottenImageYet, res, error_1, buff;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -116,7 +116,6 @@ var decryptMedia = function (message, useragentOverride) { return __awaiter(void
         }
     });
 }); };
-exports.decryptMedia = decryptMedia;
 var processUA = function (userAgent) {
     var ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36';
     if (!ua.includes('WhatsApp'))
@@ -171,12 +170,11 @@ var base64ToBytes = function (base64Str) {
     }
     return byteArray;
 };
-var bleachMessage = function (m) {
+exports.bleachMessage = function (m) {
     var r = __assign({}, m);
     Object.keys(m).map(function (key) {
-        if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash"].includes(key))
+        if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash", "deprecatedMms3Url"].includes(key))
             delete r[key];
     });
     return r;
 };
-exports.bleachMessage = bleachMessage;

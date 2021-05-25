@@ -1,4 +1,4 @@
-import { decryptMedia } from "../dist/decrypt.js";
+import { decryptMedia } from "../dist/decrypt";
 import mime from "mime-types";
 import fs from "fs";
 import crypto from "crypto";

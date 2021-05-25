@@ -1,4 +1,4 @@
-import { decryptMedia } from "../src/decrypt";
+import { decryptMedia } from "../dist/decrypt.js";
 import mime from "mime-types";
 import fs from "fs";
 import crypto from "crypto";
@@ -6,14 +6,14 @@ import crypto from "crypto";
 async function test() {
   //The absolute minimum data required to decrypt a file. This expires after a while. Add your own data here.
   const message = {
-    clientUrl: "https://mmg.whatsapp.net/d/f/AiEm7XJBxP_8ri_k9zlwe2zeWtU0j89pY5wNEwVyoMfe.enc",
-    mediaKey: "8xM7x7PoQZK2hxNaLUm9uWIpgAf0PjUiTTAZLVzlTo8=",
-    mimetype: "audio/ogg; codecs=opus",
-    size: 36583,
-    type: "ptt",
-    filehash: "RnaReUwzotOVz+t7yy3cypWCIwcjqzsO3rLBxJ7/foY=",
-    uploadhash: "SyfWSQRbVN6XQ8c5FPTKcObk9gnFNuiS48OMDl5DGMQ="
-    }
+    clientUrl: undefined,
+    deprecatedMms3Url: "https://mmg.whatsapp.net/d/f/AlsIPPj-XJ0-HiLnMCyRmZRVIJWqP-l6L5FBKt_ybcad.enc",
+    filehash: "D7dVGaQfR4lPKdWydw8u1jL/UD5pd/twJN0V6/WhY6w=",
+    mediaKey: "PSHnGhaGa0wFQT9XxU0YkPFGpnrKYKN6mhe98gWSy2g=",
+    mimetype: "image/jpeg",
+    size: 34273,
+    type: "image"
+  }
   const filename = `${Date.now()}.${mime.extension(message.mimetype)}`;
   const mediaData = await decryptMedia(message);
   //Now confirm hash

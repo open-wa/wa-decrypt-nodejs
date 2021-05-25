@@ -6,7 +6,7 @@
   "types": "dist/decrypt.d.ts",
   "type": "module",
   "scripts": {
-    "test": "ts-node ./test/index.ts",
+    "test": "node --loader ts-node/esm ./test/index.ts",
     "build": "tsc"
   },
   "engines": {

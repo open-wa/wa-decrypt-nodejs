@@ -3,7 +3,7 @@ import hkdf from 'futoin-hkdf';
 import atob from 'atob';
 import axios from 'axios';
 import { ResponseType } from 'axios';
-const makeOptions = (useragentOverride: string) => ({
+const makeOptions = (useragentOverride: string | undefined) => ({
   responseType: 'arraybuffer' as ResponseType,
   headers: {
     'User-Agent': processUA(useragentOverride),
@@ -15,7 +15,9 @@ const makeOptions = (useragentOverride: string) => ({
 });
 
 const timeout = (ms: number) => new Promise(res => setTimeout(res, ms));
-export const mediaTypes = {
+export const mediaTypes : {
+  [k: string] : string
+} = {
   IMAGE: 'Image',
   VIDEO: 'Video',
   AUDIO: 'Audio',
@@ -49,13 +51,13 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
   return magix(buff, message.mediaKey, message.type, message.size);
 };
 
-const processUA = (userAgent: string) => {
+const processUA = (userAgent: string | undefined) => {
   let ua = userAgent || 'WhatsApp/2.16.352 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36';
   if (!ua.includes('WhatsApp')) ua = "WhatsApp/2.16.352 " + ua;
   return ua;
 }
 
-const magix = (fileData: any, mediaKeyBase64: any, mediaType: any, expectedSize?: number) => {
+const magix = (fileData: any, mediaKeyBase64: any, mediaType: string, expectedSize?: number) => {
   var encodedHex = fileData.toString('hex');
   var encodedBytes = hexToBytes(encodedHex);
   var mediaKeyBytes: any = base64ToBytes(mediaKeyBase64);
@@ -84,7 +86,7 @@ const fixPadding = (data: Buffer, expectedSize: number) => {
       data = data.slice(0, data.length - padding);
     } else if ((data.length + padding) == expectedSize) {
       // console.log(`adding: ${padding} bytes`);
-      let arr = new Uint16Array(padding).map(b => padding);
+      let arr = new Uint16Array(padding).map(() => padding);
       data = Buffer.concat([data, Buffer.from(arr)]);
     }
   }
@@ -113,7 +115,9 @@ const base64ToBytes = (base64Str: any) => {
 /**
  * This removes all but the minimum required data to decrypt media. This can be useful to minimize sensitive data transport. Note, this deletes all information regarding where/who sent the message.
  */
-export const bleachMessage = (m) => {
+export const bleachMessage = (m : {
+  [k : string] : unknown
+}) => {
   var r = { ...m };
   Object.keys(m).map(key => {
     if (!["type", "clientUrl", "mimetype", "mediaKey", "size", "filehash", "uploadhash", "deprecatedMms3Url"].includes(key)) delete r[key]

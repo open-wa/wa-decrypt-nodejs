@@ -2,11 +2,15 @@
   "name": "@open-wa/wa-decrypt",
   "version": "3.1.0",
   "description": "A lightweight implementation of the open-wa/wa-automate-nodejs media decryption code",
-  "main": "dist/decrypt.js",
+  "exports": "./dist/decrypt.js",
   "types": "dist/decrypt.d.ts",
+  "type": "module",
   "scripts": {
     "test": "ts-node ./test/index.ts",
     "build": "tsc"
+  },
+  "engines": {
+    "node": ">=12"
   },
   "publishConfig": {
     "access": "public"
@@ -27,7 +31,9 @@
   },
   "homepage": "https://github.com/open-wa/wa-decrypt-nodejs#readme",
   "devDependencies": {
+    "@sindresorhus/tsconfig": "^1.0.2",
     "@types/atob": "^2.1.2",
+    "@types/mime-types": "^2.1.0",
     "@types/node": "^15.6.1",
     "mime-types": "^2.1.30",
     "ts-node": "^10.0.0",

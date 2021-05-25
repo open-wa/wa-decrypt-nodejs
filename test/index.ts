@@ -1,6 +1,6 @@
 import { decryptMedia } from "../src/decrypt";
-const mime = require("mime-types");
-const fs = require("fs");
+import mime from "mime-types";
+import fs from "fs";
 import crypto from "crypto";
 
 async function test() {

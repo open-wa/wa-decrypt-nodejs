@@ -16,9 +16,7 @@
   "dependencies": {
     "atob": "^2.1.2",
     "axios": "^0.21.0",
-    "fs": "0.0.1-security",
-    "futoin-hkdf": "^1.3.1",
-    "mime-types": "^2.1.26"
+    "futoin-hkdf": "^1.3.1"
   },
   "repository": {
     "type": "git",
@@ -31,6 +29,7 @@
   "devDependencies": {
     "@types/atob": "^2.1.2",
     "@types/node": "^15.6.1",
+    "mime-types": "^2.1.26",
     "ts-node": "^10.0.0",
     "typescript": "^4.0.3"
   }

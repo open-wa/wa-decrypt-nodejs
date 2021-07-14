@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/atob": "^2.1.2",
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^15.6.1",
+    "@types/node": "^16.3.2",
     "mime-types": "^2.1.30",
     "ts-node": "^10.0.0",
     "typescript": "^4.2.4"

@@ -48,7 +48,7 @@ export const decryptMedia = async (message: any, useragentOverride?: string) => 
     throw error
   }
   const buff = Buffer.from(res.data, 'binary');
-  return magix(buff, message.mediaKey, message.type, message.size);
+  return magix(buff, message.mediaKey, message.type, message.size, message.mimetype);
 };
 
 const processUA = (userAgent: string | undefined) => {
@@ -57,11 +57,11 @@ const processUA = (userAgent: string | undefined) => {
   return ua;
 }
 
-const magix = (fileData: any, mediaKeyBase64: any, mediaType: string, expectedSize?: number) => {
+const magix = (fileData: any, mediaKeyBase64: any, mediaType: string, expectedSize?: number, mimetype ?: string) => {
   var encodedHex = fileData.toString('hex');
   var encodedBytes = hexToBytes(encodedHex);
   var mediaKeyBytes: any = base64ToBytes(mediaKeyBase64);
-  const info = `WhatsApp ${mediaTypes[mediaType.toUpperCase()]} Keys`;
+  const info = `WhatsApp ${mediaTypes[mediaType.toUpperCase()] || mediaTypes[Object.keys(mediaTypes).filter(type=>mimetype.includes(type.toLowerCase()))[0]]} Keys`;
   const hash: string = 'sha256';
   const salt: any = new Uint8Array(32);
   const expandedSize = 112;

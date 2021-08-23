@@ -3,6 +3,7 @@ import hkdf from 'futoin-hkdf';
 import atob from 'atob';
 import axios from 'axios';
 import { ResponseType } from 'axios';
+import { RequireAtLeastOne } from 'type-fest/source/require-at-least-one';
 const makeOptions = (useragentOverride: string | undefined) => ({
   responseType: 'arraybuffer' as ResponseType,
   headers: {
@@ -26,7 +27,18 @@ export const mediaTypes : {
   STICKER: 'Image'
 };
 
-export const decryptMedia = async (message: any, useragentOverride?: string) => {
+export type DecryptableMessage = RequireAtLeastOne<{
+  clientUrl ?: string,
+  deprecatedMms3Url ?: string,
+}, 'clientUrl' | 'deprecatedMms3Url'> & {
+  mediaKey: string,
+  filehash: string,
+  mimetype: string,
+  type: string,
+  size: number
+}
+
+export const decryptMedia = async (message: DecryptableMessage, useragentOverride?: string) => {
   const options = makeOptions(useragentOverride);
   message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
   if (!message.clientUrl) throw new Error('message is missing critical data needed to download the file.')

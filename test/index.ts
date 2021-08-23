@@ -1,11 +1,11 @@
-import { decryptMedia } from "../dist/decrypt";
+import { DecryptableMessage, decryptMedia } from "../dist/decrypt";
 import mime from "mime-types";
 import fs from "fs";
 import crypto from "crypto";
 
 async function test() {
   //The absolute minimum data required to decrypt a file. This expires after a while. Add your own data here.
-  const message = {
+  const message : DecryptableMessage = {
     clientUrl: undefined,
     deprecatedMms3Url: "https://mmg.whatsapp.net/d/f/AlsIPPj-XJ0-HiLnMCyRmZRVIJWqP-l6L5FBKt_ybcad.enc",
     filehash: "D7dVGaQfR4lPKdWydw8u1jL/UD5pd/twJN0V6/WhY6w=",

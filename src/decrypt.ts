@@ -16,6 +16,10 @@ const makeOptions = (useragentOverride: string | undefined) => ({
   }
 });
 
+const nonSizeTypes = [
+  "sticker"
+]
+
 const timeout = (ms: number) => new Promise(res => setTimeout(res, ms));
 export const mediaTypes : {
   [k: string] : string
@@ -49,7 +53,8 @@ export class MissingCriticalDataError extends Error {
   }
 }
 
-export const decryptMedia = async (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => {
+//@ts-ignore
+export const decryptMedia :  (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => Promise<Buffer> = async (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => {
   const options = makeOptions(useragentOverride);
   if(!message || message === false || typeof message === "boolean") return new Error("Message is not a valid message");
   message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
@@ -62,7 +67,10 @@ export const decryptMedia = async (message: DecryptableMessage | Message | boole
   if (!message.size) missingProps.push('size'); 
 
   if (!message || !message.mediaKey || !message.filehash || !message.mimetype || !message.type || !message.size) {
-    throw new MissingCriticalDataError(`Message is missing critical data: ${missingProps.join(', ')}`);
+    if (missingProps.length == 1 && missingProps[0]==="size") {
+      if(!nonSizeTypes.includes(message.type)) console.warn("@open-wa/wa-decrypt - WARN: size property is missing. File will fail an integrity check.")
+    } 
+    else throw new MissingCriticalDataError(`Message is missing critical data: ${missingProps.join(', ')}`);
   }
   let haventGottenImageYet = true;
   let res: any;

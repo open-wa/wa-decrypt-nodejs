@@ -4,6 +4,7 @@ import atob from 'atob';
 import axios from 'axios';
 import { ResponseType } from 'axios';
 import { RequireAtLeastOne } from 'type-fest/source/require-at-least-one';
+import { Message } from '@open-wa/wa-automate-types-only/dist/api/model/message';
 const makeOptions = (useragentOverride: string | undefined) => ({
   responseType: 'arraybuffer' as ResponseType,
   headers: {
@@ -27,10 +28,7 @@ export const mediaTypes : {
   STICKER: 'Image'
 };
 
-export type DecryptableMessage = RequireAtLeastOne<{
-  clientUrl ?: string,
-  deprecatedMms3Url ?: string,
-}, 'clientUrl' | 'deprecatedMms3Url'> & {
+export type RequiredDecryptionMessage = {
   mediaKey: string,
   filehash: string,
   mimetype: string,
@@ -38,10 +36,34 @@ export type DecryptableMessage = RequireAtLeastOne<{
   size: number
 }
 
-export const decryptMedia = async (message: DecryptableMessage, useragentOverride?: string) => {
+export type DecryptableMessage = RequireAtLeastOne<{
+  clientUrl ?: string,
+  deprecatedMms3Url ?: string,
+}, 'clientUrl' | 'deprecatedMms3Url'> & RequiredDecryptionMessage
+
+export class MissingCriticalDataError extends Error {
+  constructor(public message: string) {
+    super();
+    this.name = "MissingCriticalDataError"
+    this.message = message;
+  }
+}
+
+export const decryptMedia = async (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => {
   const options = makeOptions(useragentOverride);
+  if(!message || message === false || typeof message === "boolean") return new Error("Message is not a valid message");
   message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
-  if (!message.clientUrl) throw new Error('message is missing critical data needed to download the file.')
+  let missingProps = [];
+  message = message as DecryptableMessage;
+  if (!message.mediaKey) missingProps.push('mediaKey');
+  if (!message.filehash) missingProps.push('filehash');
+  if (!message.mimetype) missingProps.push('mimetype');
+  if (!message.type) missingProps.push('type');
+  if (!message.size) missingProps.push('size'); 
+
+  if (!message || !message.mediaKey || !message.filehash || !message.mimetype || !message.type || !message.size) {
+    throw new MissingCriticalDataError(`Message is missing critical data: ${missingProps.join(', ')}`);
+  }
   let haventGottenImageYet = true;
   let res: any;
   try {

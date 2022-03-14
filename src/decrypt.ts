@@ -56,8 +56,7 @@ export class MissingCriticalDataError extends Error {
 //@ts-ignore
 export const decryptMedia :  (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => Promise<Buffer> = async (message: DecryptableMessage | Message | boolean, useragentOverride?: string) => {
   const options = makeOptions(useragentOverride);
-  if(!message || message === false || typeof message === "boolean") return new Error("Message is not a valid message");
-  message.clientUrl = message.clientUrl || message.deprecatedMms3Url;
+  if(!message || (message as any) === false || typeof message === "boolean") return new Error("Message is not a valid message");
   let missingProps = [];
   message = message as DecryptableMessage;
   if (!message.mediaKey) missingProps.push('mediaKey');
@@ -76,7 +75,7 @@ export const decryptMedia :  (message: DecryptableMessage | Message | boolean, u
   let res: any;
   try {
     while (haventGottenImageYet) {
-      res = await axios.get(message.clientUrl.trim(), options);
+      res = await axios.get(message.deprecatedMms3Url.trim(), options);
       if (res.status == 200) {
         haventGottenImageYet = false;
       } else if (res.status == 404) {
